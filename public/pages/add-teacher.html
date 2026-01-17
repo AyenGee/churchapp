@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Teacher - Sunday School Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center h-16">
+                <a href="teachers.html" class="mr-4">← Back</a>
+                <h1 class="text-xl font-bold" id="pageTitle">👩‍🏫 Add Teacher</h1>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <form id="teacherForm" class="bg-white rounded-lg shadow-lg p-6 space-y-6">
+            <!-- Basic Information -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold border-b pb-2">Basic Information</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Full name"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+                        <select id="role" name="role" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select role</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Helper">Helper</option>
+                            <option value="Assistant">Assistant</option>
+                            <option value="Coordinator">Coordinator</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="space-y-4 border-t pt-4">
+                <h3 class="text-lg font-semibold border-b pb-2">Contact Information</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contact</label>
+                        <input type="text" id="contact" name="contact" placeholder="Phone number"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" name="email" placeholder="email@example.com"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes -->
+            <div class="space-y-4 border-t pt-4">
+                <h3 class="text-lg font-semibold border-b pb-2">Classes</h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Classes (comma-separated)</label>
+                    <input type="text" id="classes" name="classes" placeholder="e.g., Ages 3-5, Ages 6-8"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-500 mt-1">Enter class names separated by commas</p>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="space-y-4 border-t pt-4">
+                <h3 class="text-lg font-semibold border-b pb-2">Additional Notes</h3>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="Any special notes..."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+                <button type="submit" 
+                    class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    Save Teacher
+                </button>
+                <button type="button" onclick="window.location.href='teachers.html'"
+                    class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 font-medium">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const teacherId = urlParams.get('id');
+        const isEdit = !!teacherId;
+
+        if (isEdit) {
+            document.getElementById('pageTitle').textContent = '👩‍🏫 Edit Teacher';
+        }
+
+        // Load teacher data if editing
+        if (isEdit) {
+            loadTeacherData();
+        }
+
+        async function loadTeacherData() {
+            try {
+                const teacher = await teachersAPI.getById(teacherId);
+                document.getElementById('name').value = teacher.name;
+                document.getElementById('role').value = teacher.role;
+                document.getElementById('contact').value = teacher.contact || '';
+                document.getElementById('email').value = teacher.email || '';
+                document.getElementById('classes').value = teacher.classes ? teacher.classes.join(', ') : '';
+                document.getElementById('notes').value = teacher.notes || '';
+            } catch (error) {
+                console.error('Error loading teacher:', error);
+                showNotification('Failed to load teacher data', 'error');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('teacherForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const classesText = formData.get('classes');
+            const classes = classesText ? classesText.split(',').map(c => c.trim()).filter(c => c) : [];
+
+            const teacherData = {
+                name: formData.get('name'),
+                role: formData.get('role'),
+                contact: formData.get('contact') || undefined,
+                email: formData.get('email') || undefined,
+                classes: classes.length > 0 ? classes : undefined,
+                notes: formData.get('notes') || undefined
+            };
+
+            try {
+                if (isEdit) {
+                    await teachersAPI.update(teacherId, teacherData);
+                    showNotification('Teacher updated successfully!', 'success');
+                } else {
+                    await teachersAPI.create(teacherData);
+                    showNotification('Teacher added successfully!', 'success');
+                }
+                setTimeout(() => {
+                    window.location.href = 'teachers.html';
+                }, 1500);
+            } catch (error) {
+                showNotification(error.message || 'Failed to save teacher', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+

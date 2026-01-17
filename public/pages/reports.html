@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Sunday School Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center h-16">
+                <a href="../index.html" class="mr-4">← Back</a>
+                <h1 class="text-xl font-bold">📊 Reports</h1>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Report Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <a href="#monthly-attendance" onclick="showReport('monthly-attendance')" 
+                class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+                <div class="text-4xl mb-3">📅</div>
+                <h3 class="text-lg font-semibold mb-2">Monthly Attendance</h3>
+                <p class="text-sm text-gray-600">View attendance statistics by month</p>
+            </a>
+            <a href="#child-history" onclick="showReport('child-history')" 
+                class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+                <div class="text-4xl mb-3">👶</div>
+                <h3 class="text-lg font-semibold mb-2">Child History</h3>
+                <p class="text-sm text-gray-600">Track individual child attendance</p>
+            </a>
+            <a href="#event-participation" onclick="showReport('event-participation')" 
+                class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+                <div class="text-4xl mb-3">🎉</div>
+                <h3 class="text-lg font-semibold mb-2">Event Participation</h3>
+                <p class="text-sm text-gray-600">See who attended which events</p>
+            </a>
+        </div>
+
+        <!-- Monthly Attendance Report -->
+        <div id="monthly-attendance" class="report-section hidden bg-white rounded-lg shadow p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Monthly Attendance Report</h2>
+                <button onclick="hideReport('monthly-attendance')" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                    <input type="month" id="attendanceMonth" value="" onchange="loadMonthlyAttendance()"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Class (optional)</label>
+                    <input type="text" id="attendanceClass" placeholder="e.g., Ages 3-5" onchange="loadMonthlyAttendance()"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div id="monthlyAttendanceContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Child History Report -->
+        <div id="child-history" class="report-section hidden bg-white rounded-lg shadow p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Child Attendance History</h2>
+                <button onclick="hideReport('child-history')" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Select Child</label>
+                <select id="childSelect" onchange="loadChildHistory()"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Loading children...</option>
+                </select>
+            </div>
+            <div id="childHistoryContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Event Participation Report -->
+        <div id="event-participation" class="report-section hidden bg-white rounded-lg shadow p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Event Participation Report</h2>
+                <button onclick="hideReport('event-participation')" class="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date (optional)</label>
+                    <input type="date" id="eventStartDate" onchange="loadEventParticipation()"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date (optional)</label>
+                    <input type="date" id="eventEndDate" onchange="loadEventParticipation()"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div id="eventParticipationContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        // Set default month to current month
+        const now = new Date();
+        document.getElementById('attendanceMonth').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+        function showReport(reportId) {
+            // Hide all reports
+            document.querySelectorAll('.report-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            // Show selected report
+            document.getElementById(reportId).classList.remove('hidden');
+            // Load report data
+            if (reportId === 'monthly-attendance') {
+                loadMonthlyAttendance();
+            } else if (reportId === 'child-history') {
+                loadChildrenForSelect();
+            } else if (reportId === 'event-participation') {
+                loadEventParticipation();
+            }
+        }
+
+        function hideReport(reportId) {
+            document.getElementById(reportId).classList.add('hidden');
+        }
+
+        async function loadMonthlyAttendance() {
+            const monthInput = document.getElementById('attendanceMonth').value;
+            const classFilter = document.getElementById('attendanceClass').value;
+
+            if (!monthInput) return;
+
+            const [year, month] = monthInput.split('-');
+            const params = buildQueryString({
+                year,
+                month,
+                ...(classFilter && { class: classFilter })
+            });
+
+            const container = document.getElementById('monthlyAttendanceContent');
+            showLoading(container);
+
+            try {
+                const data = await reportsAPI.getMonthlyAttendance(params);
+                container.innerHTML = `
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-blue-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Total Records</div>
+                            <div class="text-2xl font-bold">${data.totalRecords}</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Total Attendance</div>
+                            <div class="text-2xl font-bold">${data.totalAttendance}</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Average</div>
+                            <div class="text-2xl font-bold">${data.averageAttendance}</div>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Unique Children</div>
+                            <div class="text-2xl font-bold">${data.uniqueChildrenCount}</div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        ${data.attendanceByDate.map(record => `
+                            <div class="border rounded p-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium">${formatDate(record.date)}</span>
+                                    <span class="text-sm text-gray-600">${record.class}</span>
+                                </div>
+                                <div class="text-sm text-gray-700">
+                                    <strong>${record.attendanceCount}</strong> children attended
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = '<p class="text-red-500">Error loading monthly attendance</p>';
+            }
+        }
+
+        async function loadChildrenForSelect() {
+            try {
+                const children = await childrenAPI.getAll('?active=true');
+                const select = document.getElementById('childSelect');
+                select.innerHTML = '<option value="">Select a child...</option>' +
+                    children.map(child => `<option value="${child._id}">${child.name} (${child.class})</option>`).join('');
+            } catch (error) {
+                console.error('Error loading children:', error);
+            }
+        }
+
+        async function loadChildHistory() {
+            const childId = document.getElementById('childSelect').value;
+            if (!childId) {
+                document.getElementById('childHistoryContent').innerHTML = '';
+                return;
+            }
+
+            const container = document.getElementById('childHistoryContent');
+            showLoading(container);
+
+            try {
+                const data = await reportsAPI.getChildHistory(childId);
+                container.innerHTML = `
+                    <div class="bg-gray-50 p-4 rounded mb-4">
+                        <h3 class="font-semibold">${data.child.name}</h3>
+                        <p class="text-sm text-gray-600">Age ${data.child.age} • ${data.child.class}</p>
+                        <p class="text-sm mt-2"><strong>Total Sundays Attended:</strong> ${data.totalSundays}</p>
+                    </div>
+                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                        ${data.records.map(record => `
+                            <div class="border rounded p-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-medium">${formatDate(record.date)}</span>
+                                    <span class="text-sm text-gray-600">${record.class}</span>
+                                </div>
+                                ${record.lessonTitle ? `<div class="text-sm text-gray-700">${record.lessonTitle}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = '<p class="text-red-500">Error loading child history</p>';
+            }
+        }
+
+        async function loadEventParticipation() {
+            const startDate = document.getElementById('eventStartDate').value;
+            const endDate = document.getElementById('eventEndDate').value;
+
+            const params = buildQueryString({
+                ...(startDate && { startDate }),
+                ...(endDate && { endDate })
+            });
+
+            const container = document.getElementById('eventParticipationContent');
+            showLoading(container);
+
+            try {
+                const data = await reportsAPI.getEventParticipation(params);
+                container.innerHTML = `
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-blue-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Total Events</div>
+                            <div class="text-2xl font-bold">${data.totalEvents}</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Total Participants</div>
+                            <div class="text-2xl font-bold">${data.totalParticipants}</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded">
+                            <div class="text-sm text-gray-600">Average</div>
+                            <div class="text-2xl font-bold">${data.averageParticipation}</div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        ${data.participationStats.map(stat => `
+                            <div class="border rounded p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h3 class="font-semibold">${stat.eventName}</h3>
+                                        <p class="text-sm text-gray-600">${stat.eventType}</p>
+                                    </div>
+                                    <span class="text-sm text-gray-600">${formatDate(stat.startDate)}</span>
+                                </div>
+                                ${stat.location ? `<p class="text-sm text-gray-600 mb-2">📍 ${stat.location}</p>` : ''}
+                                <p class="text-sm"><strong>${stat.attendanceCount}</strong> ${stat.attendanceCount === 1 ? 'person' : 'people'} attended</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = '<p class="text-red-500">Error loading event participation</p>';
+            }
+        }
+    </script>
+</body>
+</html>
+

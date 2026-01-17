@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday School Records - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <h1 class="text-xl font-bold">📚 Sunday School Records</h1>
+                <button onclick="toggleMenu()" class="md:hidden p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden pb-4 space-y-2">
+                <a href="index.html" class="block px-4 py-2 bg-blue-700 rounded">Dashboard</a>
+                <a href="pages/record-sunday.html" class="block px-4 py-2 hover:bg-blue-700 rounded">Record Sunday</a>
+                <a href="pages/events.html" class="block px-4 py-2 hover:bg-blue-700 rounded">Events</a>
+                <a href="pages/children.html" class="block px-4 py-2 hover:bg-blue-700 rounded">Children</a>
+                <a href="pages/teachers.html" class="block px-4 py-2 hover:bg-blue-700 rounded">Teachers</a>
+                <a href="pages/reports.html" class="block px-4 py-2 hover:bg-blue-700 rounded">Reports</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:block bg-blue-500 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-1">
+                <a href="index.html" class="px-4 py-3 bg-blue-700 font-medium">Dashboard</a>
+                <a href="pages/record-sunday.html" class="px-4 py-3 hover:bg-blue-700 transition">Record Sunday</a>
+                <a href="pages/events.html" class="px-4 py-3 hover:bg-blue-700 transition">Events</a>
+                <a href="pages/children.html" class="px-4 py-3 hover:bg-blue-700 transition">Children</a>
+                <a href="pages/teachers.html" class="px-4 py-3 hover:bg-blue-700 transition">Teachers</a>
+                <a href="pages/reports.html" class="px-4 py-3 hover:bg-blue-700 transition">Reports</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Summary Cards -->
+        <div id="summaryCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Cards will be loaded dynamically -->
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <a href="pages/record-sunday.html" class="flex flex-col items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
+                    <div class="text-3xl mb-2">📝</div>
+                    <span class="text-sm font-medium text-center">Record Sunday</span>
+                </a>
+                <a href="pages/add-event.html" class="flex flex-col items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition">
+                    <div class="text-3xl mb-2">🎉</div>
+                    <span class="text-sm font-medium text-center">Add Event</span>
+                </a>
+                <a href="pages/add-child.html" class="flex flex-col items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition">
+                    <div class="text-3xl mb-2">👶</div>
+                    <span class="text-sm font-medium text-center">Add Child</span>
+                </a>
+                <a href="pages/add-teacher.html" class="flex flex-col items-center justify-center p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition">
+                    <div class="text-3xl mb-2">👩‍🏫</div>
+                    <span class="text-sm font-medium text-center">Add Teacher</span>
+                </a>
+                <a href="pages/reports.html" class="flex flex-col items-center justify-center p-4 bg-pink-50 hover:bg-pink-100 rounded-lg transition">
+                    <div class="text-3xl mb-2">📊</div>
+                    <span class="text-sm font-medium text-center">Reports</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Records & Upcoming Events -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Sunday Records -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-4 border-b">
+                    <h2 class="text-lg font-semibold">Recent Sunday Records</h2>
+                </div>
+                <div id="recentRecords" class="p-4">
+                    <div class="flex justify-center items-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-4 border-b">
+                    <h2 class="text-lg font-semibold">Upcoming Events</h2>
+                </div>
+                <div id="upcomingEvents" class="p-4">
+                    <div class="flex justify-center items-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        // Toggle mobile menu
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const data = await reportsAPI.getDashboard();
+                
+                // Update summary cards
+                const summaryCards = document.getElementById('summaryCards');
+                summaryCards.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="text-sm text-gray-600 mb-1">Total Children</div>
+                        <div class="text-3xl font-bold text-blue-600">${data.summary.totalChildren}</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="text-sm text-gray-600 mb-1">Total Teachers</div>
+                        <div class="text-3xl font-bold text-green-600">${data.summary.totalTeachers}</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="text-sm text-gray-600 mb-1">Sunday Records</div>
+                        <div class="text-3xl font-bold text-purple-600">${data.summary.totalSundayRecords}</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="text-sm text-gray-600 mb-1">Avg Attendance</div>
+                        <div class="text-3xl font-bold text-orange-600">${data.summary.averageAttendance}</div>
+                    </div>
+                `;
+
+                // Update recent records
+                const recentRecordsDiv = document.getElementById('recentRecords');
+                if (data.recentRecords && data.recentRecords.length > 0) {
+                    recentRecordsDiv.innerHTML = data.recentRecords.map(record => `
+                        <div class="border-b last:border-0 py-3">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-medium">${formatDate(record.date)}</span>
+                                <span class="text-sm text-gray-600">${record.class}</span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                ${record.lessonTitle || 'No lesson title'}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                ${record.childrenPresent?.length || 0} children • ${record.teachers?.length || 0} teachers
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    recentRecordsDiv.innerHTML = '<p class="text-gray-500 text-center py-4">No records yet</p>';
+                }
+
+                // Update upcoming events
+                const upcomingEventsDiv = document.getElementById('upcomingEvents');
+                if (data.upcomingEvents && data.upcomingEvents.length > 0) {
+                    upcomingEventsDiv.innerHTML = data.upcomingEvents.map(event => `
+                        <div class="border-b last:border-0 py-3">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-medium">${event.eventName}</span>
+                                <span class="text-xs text-gray-600">${formatDate(event.startDate)}</span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                ${event.location || 'Location TBD'}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                ${event.attendance?.length || 0} attending
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    upcomingEventsDiv.innerHTML = '<p class="text-gray-500 text-center py-4">No upcoming events</p>';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            }
+        }
+
+        // Load dashboard on page load
+        loadDashboard();
+    </script>
+</body>
+</html>
+

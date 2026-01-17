@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers - Sunday School Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="../index.html" class="mr-4">← Back</a>
+                    <h1 class="text-xl font-bold">👩‍🏫 Teachers</h1>
+                </div>
+                <a href="add-teacher.html" class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 font-medium">
+                    + Add Teacher
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" id="searchInput" placeholder="Search by name or role..." 
+                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    oninput="loadTeachers()">
+                <select id="roleFilter" onchange="loadTeachers()"
+                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Roles</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Helper">Helper</option>
+                    <option value="Assistant">Assistant</option>
+                    <option value="Coordinator">Coordinator</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Teachers List -->
+        <div id="teachersList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex justify-center items-center py-12 col-span-full">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        async function loadTeachers() {
+            const search = document.getElementById('searchInput').value;
+            const roleFilter = document.getElementById('roleFilter').value;
+
+            const params = buildQueryString({
+                ...(search && { search }),
+                ...(roleFilter && { role: roleFilter }),
+                active: 'true'
+            });
+
+            try {
+                const teachers = await teachersAPI.getAll(params);
+                renderTeachers(teachers);
+            } catch (error) {
+                console.error('Error loading teachers:', error);
+                showNotification('Failed to load teachers', 'error');
+                document.getElementById('teachersList').innerHTML = '<p class="text-center text-gray-500 py-8 col-span-full">Error loading teachers</p>';
+            }
+        }
+
+        function renderTeachers(teachers) {
+            const container = document.getElementById('teachersList');
+            
+            if (teachers.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-8 col-span-full">No teachers found</p>';
+                return;
+            }
+
+            container.innerHTML = teachers.map(teacher => `
+                <div class="bg-white rounded-lg shadow hover:shadow-md transition p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold">${teacher.name}</h3>
+                            <p class="text-sm text-gray-600">${teacher.role}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editTeacher('${teacher._id}')" 
+                                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                Edit
+                            </button>
+                            <button onclick="deleteTeacher('${teacher._id}')" 
+                                class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    ${teacher.contact ? `<div class="text-sm text-gray-600 mt-2">📞 ${teacher.contact}</div>` : ''}
+                    ${teacher.email ? `<div class="text-sm text-gray-600">📧 ${teacher.email}</div>` : ''}
+                    ${teacher.classes && teacher.classes.length > 0 ? `
+                        <div class="text-sm text-gray-600 mt-2">
+                            Classes: ${teacher.classes.join(', ')}
+                        </div>
+                    ` : ''}
+                    ${teacher.notes ? `<p class="text-sm text-gray-700 mt-2">${teacher.notes}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function editTeacher(id) {
+            window.location.href = `add-teacher.html?id=${id}`;
+        }
+
+        async function deleteTeacher(id) {
+            if (!confirm('Are you sure you want to delete this teacher? They will be marked as inactive.')) return;
+
+            try {
+                await teachersAPI.delete(id);
+                showNotification('Teacher deleted successfully', 'success');
+                loadTeachers();
+            } catch (error) {
+                showNotification('Failed to delete teacher', 'error');
+            }
+        }
+
+        // Load teachers on page load
+        loadTeachers();
+    </script>
+</body>
+</html>
+

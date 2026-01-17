@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Children - Sunday School Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="../index.html" class="mr-4">← Back</a>
+                    <h1 class="text-xl font-bold">👶 Children</h1>
+                </div>
+                <a href="add-child.html" class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 font-medium">
+                    + Add Child
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="text" id="searchInput" placeholder="Search by name or class..." 
+                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    oninput="loadChildren()">
+                <select id="classFilter" onchange="loadChildren()"
+                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Classes</option>
+                    <!-- Will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+
+        <!-- Children List -->
+        <div id="childrenList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex justify-center items-center py-12 col-span-full">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        async function loadChildren() {
+            const search = document.getElementById('searchInput').value;
+            const classFilter = document.getElementById('classFilter').value;
+
+            const params = buildQueryString({
+                ...(search && { search }),
+                ...(classFilter && { class: classFilter }),
+                active: 'true'
+            });
+
+            try {
+                const children = await childrenAPI.getAll(params);
+                renderChildren(children);
+                updateClassFilter(children);
+            } catch (error) {
+                console.error('Error loading children:', error);
+                showNotification('Failed to load children', 'error');
+                document.getElementById('childrenList').innerHTML = '<p class="text-center text-gray-500 py-8 col-span-full">Error loading children</p>';
+            }
+        }
+
+        function updateClassFilter(children) {
+            const classFilter = document.getElementById('classFilter');
+            const classes = [...new Set(children.map(c => c.class))].sort();
+            
+            // Clear existing options except "All Classes"
+            classFilter.innerHTML = '<option value="">All Classes</option>';
+            classes.forEach(className => {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                classFilter.appendChild(option);
+            });
+        }
+
+        function renderChildren(children) {
+            const container = document.getElementById('childrenList');
+            
+            if (children.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-8 col-span-full">No children found</p>';
+                return;
+            }
+
+            container.innerHTML = children.map(child => `
+                <div class="bg-white rounded-lg shadow hover:shadow-md transition p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold">${child.name}</h3>
+                            <p class="text-sm text-gray-600">Age ${child.age} • ${child.class}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editChild('${child._id}')" 
+                                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                Edit
+                            </button>
+                            <button onclick="deleteChild('${child._id}')" 
+                                class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    ${child.parentGuardianName ? `
+                        <div class="text-sm text-gray-600 mt-2">
+                            <div>👤 ${child.parentGuardianName}</div>
+                            ${child.parentGuardianContact ? `<div>📞 ${child.parentGuardianContact}</div>` : ''}
+                        </div>
+                    ` : ''}
+                    ${child.notes ? `<p class="text-sm text-gray-700 mt-2">${child.notes}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function editChild(id) {
+            window.location.href = `add-child.html?id=${id}`;
+        }
+
+        async function deleteChild(id) {
+            if (!confirm('Are you sure you want to delete this child? They will be marked as inactive.')) return;
+
+            try {
+                await childrenAPI.delete(id);
+                showNotification('Child deleted successfully', 'success');
+                loadChildren();
+            } catch (error) {
+                showNotification('Failed to delete child', 'error');
+            }
+        }
+
+        // Load children on page load
+        loadChildren();
+    </script>
+</body>
+</html>
+
