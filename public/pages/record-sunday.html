@@ -12,7 +12,7 @@
     <nav class="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center h-16">
-                <a href="../index.html" class="mr-4 hover:opacity-80 transition">← Back</a>
+                <a href="" id="backLink" class="mr-4 hover:opacity-80 transition">← Back</a>
                 <h1 class="text-xl font-bold flex items-center gap-2 text-white">
                     <span>📝</span> Record Sunday
                 </h1>
@@ -21,6 +21,10 @@
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="card mb-6 shadow-md">
+            <h2 class="text-2xl font-bold text-gray-900" id="pageTitle">Record Sunday</h2>
+            <p class="text-gray-600 mt-1" id="pageSubtitle">Enter details for this Sunday's service</p>
+        </div>
         <form id="sundayRecordForm" class="card space-y-8 shadow-xl">
             <!-- Date & Class -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -134,9 +138,9 @@
             <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                 <button type="submit" 
                     class="btn btn-primary flex-1 px-6 py-3 text-base font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    Save Record
+                    ${isEdit ? 'Update Record' : 'Save Record'}
                 </button>
-                <button type="button" onclick="window.location.href='../index.html'"
+                <button type="button" onclick="window.location.href=isEdit ? 'sunday-records.html' : '../index.html'"
                     class="btn btn-secondary flex-1 px-6 py-3 text-base font-medium">
                     Cancel
                 </button>
@@ -147,11 +151,24 @@
     <script src="../js/api.js"></script>
     <script src="../js/utils.js"></script>
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const recordId = urlParams.get('id');
+        const isEdit = !!recordId;
+        
         let allChildren = [];
         let allTeachers = [];
+        let existingRecord = null;
 
-        // Set today's date as default
-        document.getElementById('date').value = getTodayDate();
+        // Update page title if editing and back link
+        if (isEdit) {
+            document.getElementById('pageTitle').textContent = 'Edit Sunday Record';
+            document.getElementById('pageSubtitle').textContent = 'Update the details for this Sunday\'s service';
+            document.getElementById('backLink').href = 'sunday-records.html';
+        } else {
+            document.getElementById('backLink').href = '../index.html';
+            // Set today's date as default for new records
+            document.getElementById('date').value = getTodayDate();
+        }
 
         // Toggle special theme field
         document.getElementById('isSpecialSunday').addEventListener('change', function() {
@@ -168,9 +185,60 @@
 
                 renderChildren(allChildren);
                 renderTeachers(allTeachers);
+
+                // If editing, load record data and pre-select checkboxes
+                if (isEdit) {
+                    await loadRecordData();
+                }
             } catch (error) {
                 console.error('Error loading data:', error);
-                showNotification('Failed to load children and teachers', 'error');
+                showNotification('Failed to load data', 'error');
+            }
+        }
+
+        // Load existing record data for editing
+        async function loadRecordData() {
+            try {
+                existingRecord = await sundayRecordsAPI.getById(recordId);
+                
+                // Populate form fields
+                document.getElementById('date').value = formatDateForInput(existingRecord.date);
+                document.getElementById('class').value = existingRecord.class || '';
+                document.getElementById('lessonTitle').value = existingRecord.lessonTitle || '';
+                document.getElementById('bibleVerses').value = existingRecord.bibleVerses ? existingRecord.bibleVerses.join('\n') : '';
+                document.getElementById('lessonNotes').value = existingRecord.lessonNotes || '';
+                document.getElementById('offeringAmount').value = existingRecord.offeringAmount || '';
+                document.getElementById('offeringPurpose').value = existingRecord.offeringPurpose || '';
+                document.getElementById('announcements').value = existingRecord.announcements || '';
+                document.getElementById('specialNotes').value = existingRecord.specialNotes || '';
+                document.getElementById('isSpecialSunday').checked = existingRecord.isSpecialSunday || false;
+                document.getElementById('isCombinedClass').checked = existingRecord.isCombinedClass || false;
+                document.getElementById('specialTheme').value = existingRecord.specialTheme || '';
+                
+                // Toggle special theme div if needed
+                if (existingRecord.isSpecialSunday) {
+                    document.getElementById('specialThemeDiv').classList.remove('hidden');
+                }
+
+                // Pre-select children and teachers after they're rendered
+                setTimeout(() => {
+                    if (existingRecord.childrenPresent && existingRecord.childrenPresent.length > 0) {
+                        existingRecord.childrenPresent.forEach(childId => {
+                            const checkbox = document.querySelector(`input[name="childrenPresent"][value="${childId}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+
+                    if (existingRecord.teachers && existingRecord.teachers.length > 0) {
+                        existingRecord.teachers.forEach(teacherId => {
+                            const checkbox = document.querySelector(`input[name="teachers"][value="${teacherId}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                }, 100);
+            } catch (error) {
+                console.error('Error loading record:', error);
+                showNotification('Failed to load record data', 'error');
             }
         }
 
@@ -240,13 +308,18 @@
             };
 
             try {
-                await sundayRecordsAPI.create(recordData);
-                showNotification('Sunday record saved successfully!', 'success');
+                if (isEdit) {
+                    await sundayRecordsAPI.update(recordId, recordData);
+                    showNotification('Sunday record updated successfully!', 'success');
+                } else {
+                    await sundayRecordsAPI.create(recordData);
+                    showNotification('Sunday record saved successfully!', 'success');
+                }
                 setTimeout(() => {
-                    window.location.href = '../index.html';
+                    window.location.href = 'sunday-records.html';
                 }, 1500);
             } catch (error) {
-                showNotification(error.message || 'Failed to save record', 'error');
+                showNotification(error.message || `Failed to ${isEdit ? 'update' : 'save'} record`, 'error');
             }
         });
 
