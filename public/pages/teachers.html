@@ -4,33 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teachers - Sunday School Records</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body style="background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%); min-height: 100vh;">
     <!-- Navigation -->
-    <nav class="bg-[#1F2839] text-white shadow-lg sticky top-0 z-40">
+    <nav class="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
-                    <a href="../index.html" class="mr-4">← Back</a>
-                    <h1 class="text-xl font-bold">👩‍🏫 Teachers</h1>
+                    <a href="../index.html" class="mr-4 hover:opacity-80 transition">← Back</a>
+                    <h1 class="text-xl font-bold flex items-center gap-2 text-white">
+                        <span>👩‍🏫</span> Teachers
+                    </h1>
                 </div>
-                <a href="add-teacher.html" class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 font-medium">
+                <a href="add-teacher.html" class="btn btn-primary bg-blue-600 text-white hover:bg-blue-700">
                     + Add Teacher
                 </a>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Filters -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
+        <div class="card mb-6 shadow-md">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input type="text" id="searchInput" placeholder="Search by name or role..." 
-                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="form-input px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     oninput="loadTeachers()">
                 <select id="roleFilter" onchange="loadTeachers()"
-                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="form-select px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                     <option value="">All Roles</option>
                     <option value="Teacher">Teacher</option>
                     <option value="Helper">Helper</option>
@@ -81,31 +84,35 @@
             }
 
             container.innerHTML = teachers.map(teacher => `
-                <div class="bg-white rounded-lg shadow hover:shadow-md transition p-4">
-                    <div class="flex justify-between items-start mb-2">
+                <div class="card hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 border border-gray-200">
+                    <div class="flex justify-between items-start mb-3">
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold">${teacher.name}</h3>
-                            <p class="text-sm text-gray-600">${teacher.role}</p>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1">${teacher.name}</h3>
+                            <p class="text-sm"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">${teacher.role}</span></p>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="editTeacher('${teacher._id}')" 
-                                class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                class="btn btn-primary btn-sm">
                                 Edit
                             </button>
                             <button onclick="deleteTeacher('${teacher._id}')" 
-                                class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                                class="btn btn-danger btn-sm">
                                 Delete
                             </button>
                         </div>
                     </div>
-                    ${teacher.contact ? `<div class="text-sm text-gray-600 mt-2">📞 ${teacher.contact}</div>` : ''}
-                    ${teacher.email ? `<div class="text-sm text-gray-600">📧 ${teacher.email}</div>` : ''}
-                    ${teacher.classes && teacher.classes.length > 0 ? `
-                        <div class="text-sm text-gray-600 mt-2">
-                            Classes: ${teacher.classes.join(', ')}
+                    ${teacher.contact || teacher.email ? `
+                        <div class="text-sm text-gray-600 mt-3 pt-3 border-t border-gray-100">
+                            ${teacher.contact ? `<div class="mb-1">📞 ${teacher.contact}</div>` : ''}
+                            ${teacher.email ? `<div>📧 ${teacher.email}</div>` : ''}
                         </div>
                     ` : ''}
-                    ${teacher.notes ? `<p class="text-sm text-gray-700 mt-2">${teacher.notes}</p>` : ''}
+                    ${teacher.classes && teacher.classes.length > 0 ? `
+                        <div class="text-sm text-gray-600 mt-3 pt-3 border-t border-gray-100">
+                            <span class="font-medium">Classes:</span> ${teacher.classes.map(c => `<span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs ml-1">${c}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${teacher.notes ? `<p class="text-sm text-gray-700 mt-3 pt-3 border-t border-gray-100">${teacher.notes}</p>` : ''}
                 </div>
             `).join('');
         }

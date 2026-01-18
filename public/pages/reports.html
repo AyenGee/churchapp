@@ -4,36 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports - Sunday School Records</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body style="background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%); min-height: 100vh;">
     <!-- Navigation -->
-    <nav class="bg-[#1F2839] text-white shadow-lg sticky top-0 z-40">
+    <nav class="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center h-16">
-                <a href="../index.html" class="mr-4">← Back</a>
-                <h1 class="text-xl font-bold">📊 Reports</h1>
+                <a href="../index.html" class="mr-4 hover:opacity-80 transition">← Back</a>
+                <h1 class="text-xl font-bold flex items-center gap-2 text-white">
+                    <span>📊</span> Reports
+                </h1>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Report Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <a href="#monthly-attendance" onclick="showReport('monthly-attendance')" 
-                class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+                class="card hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 border border-gray-200 cursor-pointer text-center">
                 <div class="text-4xl mb-3">📅</div>
                 <h3 class="text-lg font-semibold mb-2">Monthly Attendance</h3>
                 <p class="text-sm text-gray-600">View attendance statistics by month</p>
             </a>
             <a href="#child-history" onclick="showReport('child-history')" 
-                class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+                class="card hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 border border-gray-200 cursor-pointer text-center">
                 <div class="text-4xl mb-3">👶</div>
-                <h3 class="text-lg font-semibold mb-2">Child History</h3>
+                <h3 class="text-lg font-semibold mb-2 text-gray-900">Child History</h3>
                 <p class="text-sm text-gray-600">Track individual child attendance</p>
             </a>
             <a href="#event-participation" onclick="showReport('event-participation')" 
-                class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+                class="card hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 border border-gray-200 cursor-pointer text-center">
                 <div class="text-4xl mb-3">🎉</div>
                 <h3 class="text-lg font-semibold mb-2">Event Participation</h3>
                 <p class="text-sm text-gray-600">See who attended which events</p>
@@ -41,7 +44,7 @@
         </div>
 
         <!-- Monthly Attendance Report -->
-        <div id="monthly-attendance" class="report-section hidden bg-white rounded-lg shadow p-6 mb-6">
+        <div id="monthly-attendance" class="report-section hidden card shadow-xl mb-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Monthly Attendance Report</h2>
                 <button onclick="hideReport('monthly-attendance')" class="text-gray-500 hover:text-gray-700">✕</button>
@@ -50,12 +53,12 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Month</label>
                     <input type="month" id="attendanceMonth" value="" onchange="loadMonthlyAttendance()"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Class (optional)</label>
+                    <label class="form-label block text-sm font-medium text-gray-700 mb-2">Class (optional)</label>
                     <input type="text" id="attendanceClass" placeholder="e.g., Ages 3-5" onchange="loadMonthlyAttendance()"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 </div>
             </div>
             <div id="monthlyAttendanceContent">
@@ -64,7 +67,7 @@
         </div>
 
         <!-- Child History Report -->
-        <div id="child-history" class="report-section hidden bg-white rounded-lg shadow p-6 mb-6">
+        <div id="child-history" class="report-section hidden card shadow-xl mb-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Child Attendance History</h2>
                 <button onclick="hideReport('child-history')" class="text-gray-500 hover:text-gray-700">✕</button>
@@ -82,7 +85,7 @@
         </div>
 
         <!-- Event Participation Report -->
-        <div id="event-participation" class="report-section hidden bg-white rounded-lg shadow p-6 mb-6">
+        <div id="event-participation" class="report-section hidden card shadow-xl mb-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Event Participation Report</h2>
                 <button onclick="hideReport('event-participation')" class="text-gray-500 hover:text-gray-700">✕</button>

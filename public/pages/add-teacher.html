@@ -4,34 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Teacher - Sunday School Records</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body style="background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%); min-height: 100vh;">
     <!-- Navigation -->
-    <nav class="bg-[#1F2839] text-white shadow-lg sticky top-0 z-40">
+    <nav class="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center h-16">
-                <a href="teachers.html" class="mr-4">← Back</a>
-                <h1 class="text-xl font-bold" id="pageTitle">👩‍🏫 Add Teacher</h1>
+                <a href="teachers.html" class="mr-4 hover:opacity-80 transition">← Back</a>
+                <h1 class="text-xl font-bold flex items-center gap-2 text-white" id="pageTitle">
+                    <span>👩‍🏫</span> Add Teacher
+                </h1>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <form id="teacherForm" class="bg-white rounded-lg shadow-lg p-6 space-y-6">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form id="teacherForm" class="card shadow-xl space-y-8">
             <!-- Basic Information -->
             <div class="space-y-4">
-                <h3 class="text-lg font-semibold border-b pb-2">Basic Information</h3>
+                <h3 class="text-xl font-semibold border-b border-gray-200 pb-3 text-gray-900">Basic Information</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <label class="form-label block text-sm font-medium text-gray-700 mb-2">Name *</label>
                         <input type="text" id="name" name="name" required placeholder="Full name"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+                        <label class="form-label block text-sm font-medium text-gray-700 mb-2">Role *</label>
                         <select id="role" name="role" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="form-select w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                             <option value="">Select role</option>
                             <option value="Teacher">Teacher</option>
                             <option value="Helper">Helper</option>
@@ -44,25 +47,25 @@
             </div>
 
             <!-- Contact Information -->
-            <div class="space-y-4 border-t pt-4">
-                <h3 class="text-lg font-semibold border-b pb-2">Contact Information</h3>
+            <div class="space-y-6 border-t border-gray-200 pt-6">
+                <h3 class="text-xl font-semibold border-b border-gray-200 pb-3 text-gray-900">Contact Information</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Contact</label>
                         <input type="text" id="contact" name="contact" placeholder="Phone number"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                         <input type="email" id="email" name="email" placeholder="email@example.com"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="form-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                     </div>
                 </div>
             </div>
 
             <!-- Classes -->
-            <div class="space-y-4 border-t pt-4">
-                <h3 class="text-lg font-semibold border-b pb-2">Classes</h3>
+            <div class="space-y-6 border-t border-gray-200 pt-6">
+                <h3 class="text-xl font-semibold border-b border-gray-200 pb-3 text-gray-900">Classes</h3>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Classes (comma-separated)</label>
                     <input type="text" id="classes" name="classes" placeholder="e.g., Ages 3-5, Ages 6-8"
@@ -72,23 +75,23 @@
             </div>
 
             <!-- Notes -->
-            <div class="space-y-4 border-t pt-4">
-                <h3 class="text-lg font-semibold border-b pb-2">Additional Notes</h3>
+            <div class="space-y-6 border-t border-gray-200 pt-6">
+                <h3 class="text-xl font-semibold border-b border-gray-200 pb-3 text-gray-900">Additional Notes</h3>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <textarea id="notes" name="notes" rows="4" placeholder="Any special notes..."
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        class="form-textarea w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
                 </div>
             </div>
 
             <!-- Submit Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                 <button type="submit" 
-                    class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    class="btn btn-primary flex-1 px-6 py-3 text-base font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                     Save Teacher
                 </button>
                 <button type="button" onclick="window.location.href='teachers.html'"
-                    class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 font-medium">
+                    class="btn btn-secondary flex-1 px-6 py-3 text-base font-medium">
                     Cancel
                 </button>
             </div>

@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Details - Sunday School Records</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body style="background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%); min-height: 100vh;">
     <!-- Navigation -->
-    <nav class="bg-[#1F2839] text-white shadow-lg sticky top-0 z-40">
+    <nav class="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center h-16">
-                <a href="events.html" class="mr-4">← Back</a>
-                <h1 class="text-xl font-bold">🎉 Event Details</h1>
+                <a href="events.html" class="mr-4 hover:opacity-80 transition">← Back</a>
+                <h1 class="text-xl font-bold flex items-center gap-2 text-white">
+                    <span>🎉</span> Event Details
+                </h1>
             </div>
         </div>
     </nav>
@@ -43,12 +46,12 @@
                 const endDate = event.endDate ? new Date(event.endDate) : null;
 
                 document.getElementById('eventDetails').innerHTML = `
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <div class="border-b pb-4 mb-4">
-                            <h2 class="text-2xl font-bold mb-2">${event.eventName}</h2>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">${event.eventType}</span>
-                                ${event.isCompleted ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">Completed</span>' : '<span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">Upcoming</span>'}
+                    <div class="card shadow-xl p-8">
+                        <div class="border-b border-gray-200 pb-6 mb-6">
+                            <h2 class="text-3xl font-bold mb-4 text-gray-900">${event.eventName}</h2>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="badge badge-primary px-3 py-1">${event.eventType}</span>
+                                ${event.isCompleted ? '<span class="badge badge-success px-3 py-1">Completed</span>' : '<span class="badge badge-warning px-3 py-1">Upcoming</span>'}
                             </div>
                         </div>
 
@@ -105,13 +108,13 @@
                             ` : ''}
                         </div>
 
-                        <div class="mt-6 pt-4 border-t flex gap-3">
+                        <div class="mt-8 pt-6 border-t border-gray-200 flex gap-4">
                             <button onclick="editEvent()" 
-                                class="flex-1 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 font-medium">
+                                class="btn btn-primary flex-1 px-6 py-3 text-base font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                 Edit Event
                             </button>
                             <button onclick="deleteEvent()" 
-                                class="flex-1 bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 font-medium">
+                                class="btn btn-danger flex-1 px-6 py-3 text-base font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                 Delete Event
                             </button>
                         </div>
